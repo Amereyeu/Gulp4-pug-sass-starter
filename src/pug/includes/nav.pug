@@ -1,0 +1,10 @@
+- const navItems = ["Index", "Test", "About", "Contact"]
+
+nav.nav.nav-masthead.justify-content-center.float-md-end
+  ul.d-flex
+    each item, i in navItems
+      li.p-2
+        a(href=item.toLowerCase() + ".html", class="nav-link") #{ item }
+
+
+

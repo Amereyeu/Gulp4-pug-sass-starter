@@ -1,0 +1,30 @@
+doctype html
+html
+  include includes/head
+  body.d-flex.text-center.text-white.bg-dark
+
+    div.cover-container.d-flex.w-100.p-3.mx-auto.flex-column
+      header.mb-auto
+        div
+          h3.float-md-start.mb-0 +++
+          include includes/nav
+
+      main.px-3
+        h1.
+          Praesent dapibus, neque id cursus faucibus
+
+        p.lead.
+          ultrices nulla quis nibh. Quisque a lectus. Donec consectetuer ligula vulputate sem tristique cursus. Nam nulla quam, gravida non, commodo a, sodales sit amet, nisi
+
+        - const myAttributes = {"src": "img/01.jpg", "alt": "photo", "class": "img-fluid mb-4"}
+
+        img&attributes(myAttributes)
+
+      footer.mt-auto.text-white-50
+        p
+          | Cover template for 
+          a(href="https://getbootstrap.com/", class="text-white") Bootstrap
+
+  include includes/bottom.pug
+
+  
