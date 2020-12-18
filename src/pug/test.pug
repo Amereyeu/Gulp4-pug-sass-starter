@@ -13,12 +13,28 @@ html
         h1.
           Praesent dapibus, neque id cursus faucibus
 
-        p.lead.
-          ultrices nulla quis nibh. Quisque a lectus. Donec consectetuer ligula vulputate sem tristique cursus. Nam nulla quam, gravida non, commodo a, sodales sit amet, nisi
-
         - const myAttributes = {"src": "img/01.jpg", "alt": "photo", "class": "img-fluid mb-4"}
 
         img&attributes(myAttributes)
+
+        p
+          :markdown-it(inline) **BOLD TEXT**
+
+        p
+          :markdown-it(inline) _BOLD TEXT_
+
+        :markdown-it(linkify langPrefix='highlight-')
+          #### Markdown
+
+            ```js
+              var codeBlocks;
+            ```
+
+        p.
+          In the midst of a large amount of plain
+          text, suddenly a wild #[:markdown-it(inline) *Markdown*]
+          appeared.
+
 
       footer.mt-auto.text-white-50
         p
