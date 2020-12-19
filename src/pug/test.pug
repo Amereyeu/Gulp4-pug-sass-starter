@@ -20,8 +20,6 @@ html
         p
           :markdown-it(inline) **BOLD TEXT**
 
-        p
-          :markdown-it(inline) _BOLD TEXT_
 
         :markdown-it(linkify langPrefix='highlight-')
           #### Markdown
@@ -34,6 +32,16 @@ html
           In the midst of a large amount of plain
           text, suddenly a wild #[:markdown-it(inline) *Markdown*]
           appeared.
+
+        :markdown-it(linkify langPrefix="highlight-")
+          ```html
+            <label for="exampleColorInput" class="form-label">Color picker</label>
+            <input type="color" 
+                  class="form-control form-control-color" 
+                  id="exampleColorInput" 
+                  value="#563d7c" 
+                  title="Choose your color">
+          ```
 
 
       footer.mt-auto.text-white-50
