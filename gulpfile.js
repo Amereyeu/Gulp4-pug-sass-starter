@@ -7,11 +7,13 @@ const gulp = require("gulp"),
   postcss = require("gulp-postcss"),
   autoprefixer = require("autoprefixer"),
   cssnano = require("cssnano"),
+  purgecss = require("gulp-purgecss"),
   uglify = require("gulp-uglify"),
   imagemin = require("gulp-imagemin"),
   cache = require("gulp-cache"),
   markdown = require("gulp-markdown"),
   del = require("del"),
+  log = require("fancy-log"),
   replace = require("gulp-replace");
 
 const root = "src/",
@@ -46,19 +48,6 @@ function mdown() {
     .pipe(gulp.dest("dist/"));
 }
 
-// optimized css for production
-function css() {
-  return gulp
-    .src(scss + "styles.scss", { sourcemaps: true })
-    .pipe(
-      sass({
-        outputStyle: "compressed",
-      }).on("error", sass.logError)
-    )
-    .pipe(postcss([autoprefixer(), cssnano()]))
-    .pipe(gulp.dest("dist/css/", { sourcemaps: "." }));
-}
-
 // css for testing
 function editorCSS() {
   return gulp
@@ -71,13 +60,44 @@ function editorCSS() {
     .pipe(gulp.dest("dist/css/"));
 }
 
+// optimized css for production
+function css() {
+  return gulp
+    .src(scss + "styles.scss", { sourcemaps: true })
+    .pipe(
+      sass({
+        outputStyle: "compressed",
+      }).on("error", sass.logError)
+    )
+    .pipe(postcss([autoprefixer(), cssnano()]))
+    .pipe(gulp.dest("dist/css/", { sourcemaps: "." }))
+    .on("end", function () {
+      log("*---CSS optimized!---*");
+    });
+}
+
+// purge unused css styles
+function purge() {
+  return gulp
+    .src("dist/css/styles.css")
+    .pipe(
+      purgecss({
+        content: ["dist/**/*.html"],
+      })
+    )
+    .pipe(gulp.dest("dist/css/"))
+    .on("end", function () {
+      log("*---Purge done!---*");
+    });
+}
+
 // optimized js
 function javascript() {
   return gulp
     .src(
       [
         jsSrc,
-        //,'!' + 'includes/js/jquery.min.js', // to exclude any specific files
+        //,'!' + 'includes/js/jquery.min.js', //exclude any specific files
       ],
       { sourcemaps: true }
     )
@@ -106,7 +126,10 @@ function images() {
         })
       )
     )
-    .pipe(gulp.dest("dist/img/"));
+    .pipe(gulp.dest("dist/img/"))
+    .on("end", function () {
+      log("*---Images optimized!---*");
+    });
 }
 
 //browser watch
@@ -144,10 +167,11 @@ exports.buildHTML = buildHTML;
 exports.mdown = mdown;
 exports.images = images;
 exports.clean = clean;
+exports.purge = purge;
 
 const dev = gulp.series(cacheBustTask, watch);
 gulp.task("default", dev);
 
-const build = gulp.series(css, images);
+const build = gulp.series(clean, css, purge, images);
 gulp.task("build", build);
 
