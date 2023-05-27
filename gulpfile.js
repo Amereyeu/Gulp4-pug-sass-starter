@@ -12,6 +12,9 @@ const gulp = require("gulp"),
   imagemin = require("gulp-imagemin"),
   cache = require("gulp-cache"),
   markdown = require("gulp-markdown"),
+  rename = require("gulp-rename"),
+  html2pug = require("gulp-html2pug"),
+  plumber = require("gulp-plumber"),
   del = require("del"),
   log = require("fancy-log"),
   replace = require("gulp-replace");
@@ -33,7 +36,7 @@ const jsSrc = js + "**/*.js";
 // pug to html
 function buildHTML() {
   return gulp
-    .src([pg + "*.pug"])
+    .src(pg + "*.pug")
     .pipe(pug({ pretty: true }))
     .pipe(gulp.dest(root + "html"))
     .pipe(gulp.dest("dist/"));
@@ -44,8 +47,15 @@ function mdown() {
   return gulp
     .src([md + "**/*.md"])
     .pipe(markdown())
-    .pipe(gulp.dest(root + "html"))
-    .pipe(gulp.dest("dist/"));
+    .pipe(gulp.dest(root + "html"));
+}
+
+// markdown to pug
+function mdpug() {
+  return gulp
+    .src(root + "html/*.html")
+    .pipe(html2pug())
+    .pipe(gulp.dest(pg));
 }
 
 // css for testing
@@ -141,7 +151,7 @@ function watch() {
       baseDir: "dist/",
     },
   });
-  // gulp.watch(styleWatchFiles, css);
+
   gulp.watch(styleWatchFiles, editorCSS);
   gulp.watch(pugWatchFiles, buildHTML);
   gulp.watch(markdownWatchFiles, mdown);
@@ -165,6 +175,7 @@ exports.javascript = javascript;
 exports.watch = watch;
 exports.buildHTML = buildHTML;
 exports.mdown = mdown;
+exports.mdpug = mdpug;
 exports.images = images;
 exports.clean = clean;
 exports.purge = purge;
