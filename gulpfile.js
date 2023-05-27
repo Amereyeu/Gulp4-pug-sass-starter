@@ -50,7 +50,7 @@ function mdown() {
     .pipe(gulp.dest(root + "html"));
 }
 
-// markdown to pug
+// html to pug
 function mdpug() {
   return gulp
     .src(root + "html/*.html")
