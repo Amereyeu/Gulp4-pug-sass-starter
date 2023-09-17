@@ -19,16 +19,17 @@ const gulp = require("gulp"),
   log = require("fancy-log"),
   replace = require("gulp-replace");
 
-const root = "src/",
+const root = "dev/",
   pg = root + "pug/",
   scss = root + "scss/",
   md = root + "md/",
   js = root + "js/",
-  jsDist = "dist/" + "js/";
+  jsDist = "prod/" + "js/";
 
 const htmlWatchFiles = root + "html/**/*.html",
   styleWatchFiles = scss + "**/*.scss",
   markdownWatchFiles = md + "**/*.md",
+  imageWatchFiles = root + "images/**/*.+(png|jpg|jpeg|gif|svg)",
   pugWatchFiles = pg + "**/*.pug";
 
 const jsSrc = js + "**/*.js";
@@ -39,7 +40,7 @@ function buildHTML() {
     .src(pg + "*.pug")
     .pipe(pug({ pretty: true }))
     .pipe(gulp.dest(root + "html"))
-    .pipe(gulp.dest("dist/"));
+    .pipe(gulp.dest("prod/"));
 }
 
 // markdown to html
@@ -67,7 +68,7 @@ function editorCSS() {
         outputStyle: "expanded",
       }).on("error", sass.logError)
     )
-    .pipe(gulp.dest("dist/css/"));
+    .pipe(gulp.dest("prod/css/"));
 }
 
 // optimized css for production
@@ -80,7 +81,7 @@ function css() {
       }).on("error", sass.logError)
     )
     .pipe(postcss([autoprefixer(), cssnano()]))
-    .pipe(gulp.dest("dist/css/", { sourcemaps: "." }))
+    .pipe(gulp.dest("prod/css/", { sourcemaps: "." }))
     .on("end", function () {
       log("*---CSS optimized!---*");
     });
@@ -89,13 +90,13 @@ function css() {
 // purge unused css styles
 function purge() {
   return gulp
-    .src("dist/css/styles.css")
+    .src("prod/css/styles.css")
     .pipe(
       purgecss({
-        content: ["dist/**/*.html"],
+        content: ["prod/**/*.html"],
       })
     )
-    .pipe(gulp.dest("dist/css/"))
+    .pipe(gulp.dest("prod/css/"))
     .on("end", function () {
       log("*---Purge done!---*");
     });
@@ -121,14 +122,14 @@ function cacheBustTask() {
   var cbString = new Date().getTime();
   return gulp
     .src([root + "html/*.html"])
-    .pipe(replace(/acab=\d+/g, "acab=" + cbString))
-    .pipe(gulp.dest("dist/"));
+    .pipe(replace(/cb=\d+/g, "cb=" + cbString))
+    .pipe(gulp.dest("prod/"));
 }
 
 // optimize images
 function images() {
   return gulp
-    .src(root + "img/**/*.+(png|jpg|jpeg|gif|svg)")
+    .src(root + "images/**/*.+(png|jpg|jpeg|gif|svg)")
     .pipe(
       cache(
         imagemin({
@@ -136,7 +137,7 @@ function images() {
         })
       )
     )
-    .pipe(gulp.dest("dist/img/"))
+    .pipe(gulp.dest("prod/images/"))
     .on("end", function () {
       log("*---Images optimized!---*");
     });
@@ -148,7 +149,7 @@ function watch() {
     notify: false,
     files: ["**/*.html"],
     server: {
-      baseDir: "dist/",
+      baseDir: "prod/",
     },
   });
 
@@ -156,9 +157,14 @@ function watch() {
   gulp.watch(pugWatchFiles, buildHTML);
   gulp.watch(markdownWatchFiles, mdown);
   gulp.watch(jsSrc, javascript);
+  gulp.watch(imageWatchFiles , images);
   gulp
     .watch(
-      [htmlWatchFiles, jsDist + "all.js", "dist/css/styles.css"],
+      [
+        htmlWatchFiles,
+        jsDist + "all.js",
+        styleWatchFiles,
+      ],
       gulp.series(cacheBustTask)
     )
     .on("change", reload);
@@ -166,7 +172,7 @@ function watch() {
 
 // cleanup before build
 function clean() {
-  return del(["dist/css/**/*", "dist/img/**/*"]);
+  return del(["prod/css/**/*", "prod/images/**/*"]);
 }
 
 exports.css = css;
@@ -185,4 +191,5 @@ gulp.task("default", dev);
 
 const build = gulp.series(clean, css, purge, images);
 gulp.task("build", build);
+
 
