@@ -1,23 +1,23 @@
 const gulp = require("gulp"),
-  browserSync = require("browser-sync").create(),
-  reload = browserSync.reload,
-  sass = require("gulp-sass")(require("sass")),
-  concat = require("gulp-concat"),
-  pug = require("gulp-pug"),
-  postcss = require("gulp-postcss"),
   autoprefixer = require("autoprefixer"),
-  cssnano = require("cssnano"),
-  purgecss = require("gulp-purgecss"),
-  uglify = require("gulp-uglify"),
-  imagemin = require("gulp-imagemin"),
+  browserSync = require("browser-sync").create(),
   cache = require("gulp-cache"),
-  markdown = require("gulp-markdown"),
-  rename = require("gulp-rename"),
-  html2pug = require("gulp-html2pug"),
-  plumber = require("gulp-plumber"),
+  concat = require("gulp-concat"),
+  cssnano = require("cssnano"),
   del = require("del"),
+  html2pug = require("gulp-html2pug"),
+  imagemin = require("gulp-imagemin"),
   log = require("fancy-log"),
-  replace = require("gulp-replace");
+  markdown = require("gulp-markdown"),
+  postcss = require("gulp-postcss"),
+  plumber = require("gulp-plumber"),
+  pug = require("gulp-pug"),
+  purgecss = require("gulp-purgecss"),
+  reload = browserSync.reload,
+  rename = require("gulp-rename"),
+  replace = require("gulp-replace"),
+  sass = require("gulp-sass")(require("sass")),
+  uglify = require("gulp-uglify");
 
 const root = "dev/",
   pg = root + "pug/",
@@ -35,7 +35,7 @@ const htmlWatchFiles = root + "html/**/*.html",
 const jsSrc = js + "**/*.js";
 
 // pug to html
-function buildHTML() {
+function pugToHTML() {
   return gulp
     .src(pg + "*.pug")
     .pipe(pug({ pretty: true }))
@@ -44,7 +44,7 @@ function buildHTML() {
 }
 
 // markdown to html
-function mdown() {
+function mdToHTML() {
   return gulp
     .src([md + "**/*.md"])
     .pipe(markdown())
@@ -52,15 +52,15 @@ function mdown() {
 }
 
 // html to pug
-function mdpug() {
+function HTMLToPug() {
   return gulp
     .src(root + "html/*.html")
     .pipe(html2pug())
     .pipe(gulp.dest(pg));
 }
 
-// css for testing
-function editorCSS() {
+// css for testing in dev
+function developementCSS() {
   return gulp
     .src(scss + "styles.scss")
     .pipe(
@@ -72,7 +72,7 @@ function editorCSS() {
 }
 
 // optimized css for production
-function css() {
+function productionCSS() {
   return gulp
     .src(scss + "styles.scss", { sourcemaps: true })
     .pipe(
@@ -88,7 +88,7 @@ function css() {
 }
 
 // purge unused css styles
-function purge() {
+function purgeUnusedCSS() {
   return gulp
     .src("prod/css/styles.css")
     .pipe(
@@ -98,7 +98,7 @@ function purge() {
     )
     .pipe(gulp.dest("prod/css/"))
     .on("end", function () {
-      log("*---Purge done!---*");
+      log("*---CSS Purge done!---*");
     });
 }
 
@@ -114,11 +114,14 @@ function javascript() {
     )
     .pipe(concat("all.js"))
     .pipe(uglify())
-    .pipe(gulp.dest(jsDist, { sourcemaps: "." }));
+    .pipe(gulp.dest(jsDist, { sourcemaps: "." }))
+    .on("end", function () {
+      log("*---JS optimized!---*");
+    });
 }
 
-//cache
-function cacheBustTask() {
+//cache bust
+function cacheBust() {
   var cbString = new Date().getTime();
   return gulp
     .src([root + "html/*.html"])
@@ -127,7 +130,7 @@ function cacheBustTask() {
 }
 
 // optimize images
-function images() {
+function optimizeImages() {
   return gulp
     .src(root + "images/**/*.+(png|jpg|jpeg|gif|svg)")
     .pipe(
@@ -153,11 +156,11 @@ function watch() {
     },
   });
 
-  gulp.watch(styleWatchFiles, editorCSS);
-  gulp.watch(pugWatchFiles, buildHTML);
-  gulp.watch(markdownWatchFiles, mdown);
+  gulp.watch(styleWatchFiles, developementCSS);
+  gulp.watch(pugWatchFiles, pugToHTML);
+  gulp.watch(markdownWatchFiles, mdToHTML);
   gulp.watch(jsSrc, javascript);
-  gulp.watch(imageWatchFiles , images);
+  gulp.watch(imageWatchFiles, optimizeImages);
   gulp
     .watch(
       [
@@ -165,31 +168,61 @@ function watch() {
         jsDist + "all.js",
         styleWatchFiles,
       ],
-      gulp.series(cacheBustTask)
+      gulp.series(cacheBust)
     )
     .on("change", reload);
 }
 
 // cleanup before build
-function clean() {
+function deleteAll() {
   return del(["prod/css/**/*", "prod/images/**/*"]);
 }
 
-exports.css = css;
-exports.editorCSS = editorCSS;
+exports.productionCSS = productionCSS;
+exports.developementCSS = developementCSS;
 exports.javascript = javascript;
 exports.watch = watch;
-exports.buildHTML = buildHTML;
-exports.mdown = mdown;
-exports.mdpug = mdpug;
-exports.images = images;
-exports.clean = clean;
-exports.purge = purge;
+exports.pugToHTML = pugToHTML;
+exports.mdToHTML = mdToHTML;
+exports.HTMLToPug = HTMLToPug;
+exports.optimizeImages = optimizeImages;
+exports.deleteAll = deleteAll;
+exports.purgeUnusedCSS = purgeUnusedCSS;
 
-const dev = gulp.series(cacheBustTask, watch);
+const dev = gulp.series(cacheBust, watch);
 gulp.task("default", dev);
 
-const build = gulp.series(clean, css, purge, images);
+const build = gulp.series(
+  deleteAll,
+  productionCSS,
+  purgeUnusedCSS,
+  optimizeImages
+);
 gulp.task("build", build);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
