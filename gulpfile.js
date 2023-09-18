@@ -24,15 +24,15 @@ const root = "dev/",
   scss = root + "scss/",
   md = root + "md/",
   js = root + "js/",
+  jsSrc = js + "**/*.js",
   jsDist = "prod/" + "js/";
 
 const htmlWatchFiles = root + "html/**/*.html",
   styleWatchFiles = scss + "**/*.scss",
   markdownWatchFiles = md + "**/*.md",
   imageWatchFiles = root + "images/**/*.+(png|jpg|jpeg|gif|svg)",
+  jsWatchFiles = js + "extra/**/*.js",
   pugWatchFiles = pg + "**/*.pug";
-
-const jsSrc = js + "**/*.js";
 
 // pug to html
 function pugToHTML() {
@@ -102,21 +102,27 @@ function purgeUnusedCSS() {
     });
 }
 
-// optimized js
-function javascript() {
+// optimize js
+function optimizeJS() {
   return gulp
-    .src(
-      [
-        jsSrc,
-        //,'!' + 'includes/js/jquery.min.js', //exclude any specific files
-      ],
-      { sourcemaps: true }
-    )
-    .pipe(concat("all.js"))
+    .src([jsSrc, "!" + js + "extra/**/*.js"], {
+      sourcemaps: true,
+    })
+    .pipe(concat("js.min.js"))
     .pipe(uglify())
     .pipe(gulp.dest(jsDist, { sourcemaps: "." }))
     .on("end", function () {
       log("*---JS optimized!---*");
+    });
+}
+
+// copy other js files to production
+function jsToProd() {
+  return gulp
+    .src(js + "extra/**/*.js")
+    .pipe(gulp.dest(jsDist))
+    .on("end", function () {
+      log("*---JS copied to production!---*");
     });
 }
 
@@ -159,15 +165,12 @@ function watch() {
   gulp.watch(styleWatchFiles, developementCSS);
   gulp.watch(pugWatchFiles, pugToHTML);
   gulp.watch(markdownWatchFiles, mdToHTML);
-  gulp.watch(jsSrc, javascript);
+  gulp.watch(jsSrc, optimizeJS);
+  gulp.watch(jsWatchFiles, jsToProd);
   gulp.watch(imageWatchFiles, optimizeImages);
   gulp
     .watch(
-      [
-        htmlWatchFiles,
-        jsDist + "all.js",
-        styleWatchFiles,
-      ],
+      [htmlWatchFiles, jsDist + "all.js", styleWatchFiles],
       gulp.series(cacheBust)
     )
     .on("change", reload);
@@ -180,7 +183,8 @@ function deleteAll() {
 
 exports.productionCSS = productionCSS;
 exports.developementCSS = developementCSS;
-exports.javascript = javascript;
+exports.optimizeJS = optimizeJS;
+exports.jsToProd = jsToProd;
 exports.watch = watch;
 exports.pugToHTML = pugToHTML;
 exports.mdToHTML = mdToHTML;
@@ -199,13 +203,6 @@ const build = gulp.series(
   optimizeImages
 );
 gulp.task("build", build);
-
-
-
-
-
-
-
 
 
 
