@@ -1,6 +1,6 @@
 {
   "name": "dev-gulp",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "Gulp 4 dev enviroment",
   "author": "Amerey",
   "license": "MIT",
@@ -28,4 +28,3 @@
     "sass": "^1.62.1"
   }
 }
-
