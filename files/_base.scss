@@ -1,8 +1,4 @@
-// @import "_variables.scss";
-// @import "_mixins.scss";
-
 @import url("https://fonts.googleapis.com/css?family=Open+Sans|PT+Sans+Caption:700&display=swap&subset=latin-ext");
-
 @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
 
 * {
@@ -22,6 +18,5 @@ body {
   width: 100%;
   margin: 0 auto;
   max-width: 1200px;
-  border: 1px solid green;
   padding: 0 1rem;
 }
