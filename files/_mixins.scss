@@ -1,0 +1,60 @@
+@mixin backImage($image,
+$height: 100vh,
+$bgPos: center center) {
+  background: linear-gradient(to bottom,
+    rgba(0, 0, 0, 0),
+    rgba(0, 0, 0, .6)),
+    url($image);
+  background-repeat: no-repeat;
+  background-position: $bgPos;
+  background-size: cover;
+  min-height: $height;
+}
+
+@mixin clearfix {
+
+  &:before,
+  &:after {
+    content: '';
+    display: table;
+  }
+
+  &:after {
+    clear: both;
+  }
+}
+
+@mixin imagegrid($qty, $margin) {
+  width: ((100% - (($qty - 1) * $margin))/$qty);
+
+  &:nth-child(n) {
+    margin-right: $margin;
+    margin-bottom: $margin;
+  }
+
+  &:nth-child(#{$qty}n) {
+    margin-right: 0;
+    margin-bottom: 0;
+  }
+}
+
+@mixin break($breakpoint...) {
+  @if length($breakpoint)==1 {
+    @media (min-width: nth($breakpoint, 1)) {
+      @content;
+    }
+  }
+
+  @else {
+    @media (min-width: nth($breakpoint, 1)) and (max-width: nth($breakpoint, 2)) {
+      @content;
+    }
+  }
+}
+
+@mixin hide-text() {
+	text-shadow: none;
+	text-indent: 1000%;
+	white-space: nowrap;
+	overflow: hidden;
+}
