@@ -11,19 +11,6 @@ $bgPos: center center) {
   min-height: $height;
 }
 
-@mixin clearfix {
-
-  &:before,
-  &:after {
-    content: '';
-    display: table;
-  }
-
-  &:after {
-    clear: both;
-  }
-}
-
 @mixin imagegrid($qty, $margin) {
   width: ((100% - (($qty - 1) * $margin))/$qty);
 
