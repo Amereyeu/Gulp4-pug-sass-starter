@@ -4,5 +4,29 @@ html(lang="cs")
 
   body
     div.container
-      h1 fun starts here...
+      block header
+        header
+          include ../partials/nav
 
+      main
+        block top
+          case whatHero 
+            when "big"  
+              include ../partials/top/hero-big
+            when "small"
+              include ../partials/top/hero
+
+        block content 
+          p main content area
+
+
+        block bottom
+          include ../partials/bottom/bottom1
+          include ../partials/bottom/bottom2 
+
+      block footer
+        include ../partials/layout/footer
+        include ../partials/layout/copyright 
+
+  block scripts
+    include ../partials/layout/scripts.pug
