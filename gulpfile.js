@@ -23,6 +23,7 @@ const root = "dev/",
   pg = root + "pug/",
   scss = root + "scss/",
   md = root + "md/",
+  files = root + "files/",
   js = root + "js/",
   jsSrc = js + "**/*.js",
   jsDist = "prod/" + "js/";
@@ -30,6 +31,7 @@ const root = "dev/",
 const htmlWatchFiles = root + "html/**/*.html",
   styleWatchFiles = scss + "**/*.scss",
   markdownWatchFiles = md + "**/*.md",
+  filesWatch = files + "**/*.*",
   imageWatchFiles = root + "images/**/*.+(png|jpg|jpeg|gif|svg)",
   jsWatchFiles = js + "extra/**/*.js",
   pugWatchFiles = pg + "**/*.pug";
@@ -49,6 +51,16 @@ function mdToHTML() {
     .src([md + "**/*.md"])
     .pipe(markdown())
     .pipe(gulp.dest(root + "html"));
+}
+
+// copy files to production
+function filesToProd() {
+  return gulp
+    .src([files + "**/*.*"])
+    .pipe(gulp.dest("prod/files/"))
+    .on("end", function () {
+      log("*---Files copied to production!---*")
+    });
 }
 
 // html to pug
@@ -148,7 +160,7 @@ function optimizeImages() {
     )
     .pipe(gulp.dest("prod/images/"))
     .on("end", function () {
-      log("*---Images optimized!---*");
+      log("*---Images optimized!---*")
     });
 }
 
@@ -168,6 +180,7 @@ function watch() {
   gulp.watch(jsSrc, optimizeJS);
   gulp.watch(jsWatchFiles, jsToProd);
   gulp.watch(imageWatchFiles, optimizeImages);
+  gulp.watch(filesWatch, filesToProd);
   gulp
     .watch(
       [htmlWatchFiles, jsDist + "all.js", styleWatchFiles],
@@ -188,6 +201,7 @@ exports.jsToProd = jsToProd;
 exports.watch = watch;
 exports.pugToHTML = pugToHTML;
 exports.mdToHTML = mdToHTML;
+exports.filesToProd = filesToProd;
 exports.HTMLToPug = HTMLToPug;
 exports.optimizeImages = optimizeImages;
 exports.deleteAll = deleteAll;
@@ -203,9 +217,6 @@ const build = gulp.series(
   optimizeImages
 );
 gulp.task("build", build);
-
-
-
 
 
 
