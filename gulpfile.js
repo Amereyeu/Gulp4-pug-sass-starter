@@ -59,7 +59,7 @@ function filesToProd() {
     .src([files + "**/*.*"])
     .pipe(gulp.dest("prod/files/"))
     .on("end", function () {
-      log("*---Files copied to production!---*")
+      log("*---Files copied to production!---*");
     });
 }
 
@@ -183,7 +183,7 @@ function watch() {
   gulp.watch(filesWatch, filesToProd);
   gulp
     .watch(
-      [htmlWatchFiles, jsDist + "all.js", styleWatchFiles],
+      [htmlWatchFiles, jsWatchFiles, styleWatchFiles],
       gulp.series(cacheBust)
     )
     .on("change", reload);
