@@ -11,10 +11,12 @@
 ./dev/pug/partials/content
 ./dev/pug/partials/top
 ./dev/html
+./dev/files
 ./prod
 ./prod/images
 ./prod/js
 ./prod/css
+./prod/files
 
 
 
