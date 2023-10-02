@@ -1,40 +1,40 @@
 const gulp = require("gulp"),
-  autoprefixer = require("autoprefixer"),
-  browserSync = require("browser-sync").create(),
-  cache = require("gulp-cache"),
-  concat = require("gulp-concat"),
-  cssnano = require("cssnano"),
-  del = require("del"),
-  html2pug = require("gulp-html2pug"),
-  imagemin = require("gulp-imagemin"),
-  log = require("fancy-log"),
-  markdown = require("gulp-markdown"),
-  postcss = require("gulp-postcss"),
-  plumber = require("gulp-plumber"),
-  pug = require("gulp-pug"),
-  purgecss = require("gulp-purgecss"),
-  reload = browserSync.reload,
-  rename = require("gulp-rename"),
-  replace = require("gulp-replace"),
-  sass = require("gulp-sass")(require("sass")),
-  uglify = require("gulp-uglify");
+      autoprefixer = require("autoprefixer"),
+      browserSync = require("browser-sync").create(),
+      cache = require("gulp-cache"),
+      concat = require("gulp-concat"),
+      cssnano = require("cssnano"),
+      del = require("del"),
+      html2pug = require("gulp-html2pug"),
+      imagemin = require("gulp-imagemin"),
+      log = require("fancy-log"),
+      markdown = require("gulp-markdown"),
+      plumber = require("gulp-plumber"),
+      postcss = require("gulp-postcss"),
+      pug = require("gulp-pug"),
+      purgecss = require("gulp-purgecss"),
+      reload = browserSync.reload,
+      rename = require("gulp-rename"),
+      replace = require("gulp-replace"),
+      sass = require("gulp-sass")(require("sass")),
+      uglify = require("gulp-uglify");
 
 const root = "dev/",
-  pg = root + "pug/",
-  scss = root + "scss/",
-  md = root + "md/",
-  files = root + "files/",
-  js = root + "js/",
-  jsSrc = js + "**/*.js",
-  jsDist = "prod/" + "js/";
+      files = root + "files/",
+      js = root + "js/",
+      jsDist = "prod/" + "js/",
+      jsSrc = js + "**/*.js",
+      md = root + "md/",
+      pg = root + "pug/",
+      scss = root + "scss/";
 
-const htmlWatchFiles = root + "html/**/*.html",
-  styleWatchFiles = scss + "**/*.scss",
-  markdownWatchFiles = md + "**/*.md",
-  filesWatch = files + "**/*.*",
-  imageWatchFiles = root + "images/**/*.+(png|jpg|jpeg|gif|svg)",
-  jsWatchFiles = js + "extra/**/*.js",
-  pugWatchFiles = pg + "**/*.pug";
+const filesWatch = files + "**/*.*",
+      htmlWatchFiles = root + "html/**/*.html",
+      imageWatchFiles = root + "images/**/*.+(png|jpg|jpeg|gif|svg)",
+      jsWatchFiles = js + "extra/**/*.js",
+      markdownWatchFiles = md + "**/*.md",
+      pugWatchFiles = pg + "**/*.pug",
+      styleWatchFiles = scss + "**/*.scss";
 
 // pug to html
 function pugToHTML() {
@@ -124,7 +124,7 @@ function optimizeJS() {
     .pipe(uglify())
     .pipe(gulp.dest(jsDist, { sourcemaps: "." }))
     .on("end", function () {
-      log("*---JS optimized!---*");
+      log("*---JS optimized!---*")
     });
 }
 
@@ -174,13 +174,13 @@ function watch() {
     },
   });
 
-  gulp.watch(styleWatchFiles, developementCSS);
-  gulp.watch(pugWatchFiles, pugToHTML);
-  gulp.watch(markdownWatchFiles, mdToHTML);
+  gulp.watch(filesWatch, filesToProd);
+  gulp.watch(imageWatchFiles, optimizeImages);
   gulp.watch(jsSrc, optimizeJS);
   gulp.watch(jsWatchFiles, jsToProd);
-  gulp.watch(imageWatchFiles, optimizeImages);
-  gulp.watch(filesWatch, filesToProd);
+  gulp.watch(markdownWatchFiles, mdToHTML);
+  gulp.watch(pugWatchFiles, pugToHTML);
+  gulp.watch(styleWatchFiles, developementCSS);
   gulp
     .watch(
       [htmlWatchFiles, jsWatchFiles, styleWatchFiles],
@@ -194,18 +194,18 @@ function deleteAll() {
   return del(["prod/css/**/*", "prod/images/**/*"]);
 }
 
-exports.productionCSS = productionCSS;
+exports.deleteAll = deleteAll;
 exports.developementCSS = developementCSS;
-exports.optimizeJS = optimizeJS;
-exports.jsToProd = jsToProd;
-exports.watch = watch;
-exports.pugToHTML = pugToHTML;
-exports.mdToHTML = mdToHTML;
 exports.filesToProd = filesToProd;
 exports.HTMLToPug = HTMLToPug;
+exports.jsToProd = jsToProd;
+exports.mdToHTML = mdToHTML;
 exports.optimizeImages = optimizeImages;
-exports.deleteAll = deleteAll;
+exports.optimizeJS = optimizeJS;
+exports.productionCSS = productionCSS;
+exports.pugToHTML = pugToHTML;
 exports.purgeUnusedCSS = purgeUnusedCSS;
+exports.watch = watch;
 
 const dev = gulp.series(cacheBust, watch);
 gulp.task("default", dev);
@@ -217,7 +217,6 @@ const build = gulp.series(
   optimizeImages
 );
 gulp.task("build", build);
-
 
 
 
