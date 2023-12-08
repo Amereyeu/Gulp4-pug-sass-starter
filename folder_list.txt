@@ -1,5 +1,9 @@
 ./dev
 ./dev/scss
+./dev/scss/base
+./dev/scss/layout
+./dev/scss/misc
+./dev/scss/components
 ./dev/images
 ./dev/js
 ./dev/js/extra
