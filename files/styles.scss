@@ -1,8 +1,8 @@
 // base items
-@import "variables";
-@import "normalize";
-@import "mixins";
-@import "base";
+@import "./base/variables";
+@import "./base/normalize";
+@import "./base/mixins";
+@import "./base/base";
 
 /* example style */
 h2 { color: dodgerblue; margin: 10rem;}
